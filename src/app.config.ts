@@ -2,7 +2,7 @@
  * @Author: jinhaidi
  * @Date: 2019-10-04 21:22:26
  * @Description: 配置中心
- * @LastEditTime: 2020-01-25 19:50:14
+ * @LastEditTime: 2020-01-27 23:00:57
  */
 import * as path from 'path'
 import * as dotenvSafe from 'dotenv-safe'
@@ -14,7 +14,7 @@ dotenvSafe.config({
 })
 const config = {
   app: {
-    name: '靳海迪的个人日志',
+    name: '个人日志',
     limit: 10
   },
   dburi: isPro ? process.env.MONGO_URI1 : process.env.MONGO_URI2,

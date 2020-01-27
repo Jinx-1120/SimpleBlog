@@ -31,7 +31,7 @@
     "helmet": "^3.21.1",
     "js-base64": "^2.5.1",
     "lodash": "^4.17.15",
-    "mongoose": "^5.6.5",
+    "mongoose": "^5.7.5",
     "mongoose-auto-increment": "^5.0.1",
     "mongoose-paginate": "https://github.com/surmon-china/mongoose-paginate",
     "nodemailer": "^6.3.0",
