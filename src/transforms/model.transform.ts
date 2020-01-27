@@ -1,0 +1,38 @@
+/*
+ * @Author: jinhaidi
+ * @Date: 2019-10-07 12:36:06
+ * @Description: 模型转换器
+ * @LastEditTime: 2020-01-27 22:36:52
+ */
+import { Connection } from 'mongoose'
+import { Provider, Inject } from '@nestjs/common'
+import { Typegoose, GetModelForClassOptions, ModelType } from 'typegoose'
+import { DB_CONNECTION_TOKEN, DB_MODEL_TOKEN_SUFFIX } from '@app/constants/system.constant'
+
+type TypegooseClass<T extends Typegoose> = new (...args: any[]) => T
+
+export function getModelToken(modelName: string): string {
+  return modelName + DB_MODEL_TOKEN_SUFFIX
+}
+
+// 根据 Typegoose 获取 Model
+export function getModelBySchema<T extends Typegoose>(
+  typegooseClass: TypegooseClass<T>,
+  schemaOptions: GetModelForClassOptions = {}
+): ModelType<T> {
+  return new typegooseClass().getModelForClass(typegooseClass, schemaOptions)
+}
+
+// 根据 Model 获取 Provider
+export function getProviderByModel<T>(model: ModelType<T>): Provider<T> {
+  return {
+    provide: getModelToken(model.modelName),
+    useFactory: (connection: Connection) => model,
+    inject: [DB_CONNECTION_TOKEN]
+  }
+}
+
+// 注入器
+export function InjectModel<T extends Typegoose>(model: TypegooseClass<T>) {
+  return Inject(getModelToken(model.name))
+}
