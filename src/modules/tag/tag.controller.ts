@@ -46,7 +46,7 @@ export class TagController {
 
   @Delete(':id')
   @HttpProcessor.handle('删除单个标签')
-  delTag(@QueryParams() { params }): Promise<Tag> {
+  delTag(@QueryParams() { params }): Promise<boolean> {
     return this.tagService.delete(params.id)
   }
 }

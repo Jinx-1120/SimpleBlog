@@ -2,7 +2,7 @@
  * @Author: jinhaidi
  * @Date: 2019-10-07 12:31:37
  * @Description: 标签模型
- * @LastEditTime: 2020-01-27 22:18:20
+ * @LastEditTime: 2020-01-28 21:20:50
  */
 
 import { Types } from 'mongoose'
@@ -14,7 +14,7 @@ import { getModelBySchema, getProviderByModel } from '@app/transforms/model.tran
 @plugin(mongoosePaginate)
 @plugin(mongooseAutoIncrement.plugin, {
   model: Tag.name,
-  field: 'id',
+  field: '_id',
   startAt: 1,
   incrementBy: 1
 })
@@ -22,7 +22,7 @@ export class Tag extends Typegoose {
   @IsNotEmpty({ message: '标签名称？'})
   @IsString({message: '字符串？'})
   @prop({ required: true, validate: /\S+/})
-  name: string
+  tagName: string
 
   @IsString({ message: '字符串？' })
   @prop({default: ''})
@@ -31,7 +31,7 @@ export class Tag extends Typegoose {
   @prop({ default: new Date() })
   createTime?: Date
 
-  @prop({ default: Date.now() })
+  @prop({ default: new Date() })
   updateTime?: Date
 
   @prop({ default: 0})

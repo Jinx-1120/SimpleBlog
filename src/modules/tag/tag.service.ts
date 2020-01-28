@@ -18,75 +18,59 @@ export class TagService {
   ) {}
 
   // 请求标签列表（及聚和数据）
-  public getList(querys, options, isAuthenticated?): Promise<PaginateResult<Tag>> {
-
-    return this.tagModel
-      .paginate(querys, options)
-      .then(tags => {
-        return tags
-      })
+  public async getList(querys, options, isAuthenticated?): Promise<PaginateResult<Tag>> {
+    return await this.tagModel.paginate(querys, options)
   }
 
   // 创建标签
-  public create(newTag: Tag): Promise<Tag> {
-    return this.tagModel
-      .find({ name: newTag.name })
-      .exec()
-      .then(existedTags => {
-        return existedTags.length
-          ? Promise.reject('别名已被占用')
-          : new this.tagModel(newTag)
-            .save()
-            .then(tag => {
-              return tag
-            })
-      })
+  public async create(newTag: Tag): Promise<Tag> {
+    const existedTags = await this.tagModel.find({ tagName: newTag.tagName }).exec()
+    if (existedTags.length) {
+      return Promise.reject('别名已被占用')
+    } else {
+      const createTag = new this.tagModel(newTag)
+      return createTag.save()
+    }
   }
 
   // 获取标签详情
-  public getDetailBySlug(slug: string): Promise<Tag> {
-    return this.tagModel.findOne({ slug }).exec()
+  public getDetailBySlug(tagName: string): Promise<Tag> {
+    return this.tagModel.findOne({ tagName }).exec()
   }
 
   // 修改标签
-  public update(tagId: Types.ObjectId, newTag: Tag): Promise<Tag> {
-    return this.tagModel
-      .findOne({ name: newTag.name })
-      .exec()
-      .then(existedTag => {
-        return existedTag && String(existedTag.id) !== String(tagId)
-          ? Promise.reject('别名已被占用')
-          : this.tagModel
-            .findByIdAndUpdate(tagId, newTag, { new: true })
-            .exec()
-            .then(tag => {
-              return tag
-            })
-      })
+  public async update(tagId: Types.ObjectId, newTag: Tag): Promise<Tag> {
+    try {
+      const existedTag = await this.tagModel.findById(tagId)
+      if (existedTag) {
+        if (existedTag.tagName === newTag.tagName) return Promise.reject('标签名已被占用')
+        return await this.tagModel.findByIdAndUpdate(tagId, newTag, { new: true }).exec()
+      } else {
+        return Promise.reject('当前修改tag不存在')
+      }
+    } catch (error) {
+      return Promise.reject(error)
+    }
   }
 
   // 删除单个标签
-  public delete(tagId: Types.ObjectId): Promise<Tag> {
-    return this.tagModel
-      .findByIdAndRemove(tagId)
-      .exec()
-      .then(() => {
-        return {}
-      })
+  public async delete(tagId: Types.ObjectId): Promise<boolean> {
+    try {
+      await this.tagModel.findByIdAndRemove(tagId).exec()
+      return true
+    } catch (error) {
+      return Promise.reject(error)
+    }
   }
 
   // 批量删除标签
-  public batchDelete(tagIds: Types.ObjectId[]): Promise<any> {
-    return this.tagModel
-      .find({ _id: { $in: tagIds } })
-      .exec()
-      .then(() => {
-        return this.tagModel
-          .deleteMany({ _id: { $in: tagIds } })
-          .exec()
-          .then(result => {
-            return result
-          })
-      })
+  public async batchDelete(tagIds: Types.ObjectId[]): Promise<boolean> {
+    try {
+      await this.tagModel.find({ _id: { $in: tagIds } }).exec()
+      await this.tagModel.deleteMany({ _id: { $in: tagIds } }).exec()
+      return true
+    } catch (error) {
+      return Promise.reject(error)
+    }
   }
 }
