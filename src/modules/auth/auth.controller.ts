@@ -2,7 +2,7 @@
  * @Author: jinhaidi
  * @Date: 2019-10-16 23:06:32
  * @Description: 权限模块控制器
- * @LastEditTime: 2019-10-20 22:33:54
+ * @LastEditTime: 2020-01-29 15:16:03
  */
 
 import config from '@app/app.config'
@@ -20,7 +20,7 @@ export class AuthController {
   constructor(
     // private readonly ipService: IpService,
     private readonly emailService: EmailService,
-    private readonly authService: AuthService,
+    private readonly authService: AuthService
   ) { }
 
   @Get('admin')
@@ -37,6 +37,7 @@ export class AuthController {
   }
 
   @Post('admin')
+  @HttpProcessor.handle('注册账户')
   addAdmin(@Body() auth: Auth): Promise<any> {
     return this.authService.addAdmin(auth)
   }
@@ -44,8 +45,7 @@ export class AuthController {
   @Post('login')
   @HttpProcessor.handle({ message: '登陆', error: HttpStatus.BAD_REQUEST })
   createToken(@QueryParams() { visitors: { ip } }, @Body() body: AuthLogin): Promise<ITokenResult> {
-    return this.authService
-      .adminLogin(body.password)
+    return this.authService.adminLogin(body)
       .then(token => {
         console.log(ip)
         // this.ipService

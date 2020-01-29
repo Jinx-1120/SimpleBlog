@@ -1,10 +1,3 @@
-/**
- * Auth module.
- * @file 权限与管理员模块
- * @module module/auth/module
- * @author Surmon <https://github.com/surmon-china>
- */
-
 import config from '@app/app.config'
 import * as jwt from 'jsonwebtoken'
 import { Module } from '@nestjs/common'

@@ -1,10 +1,3 @@
-/**
- * HttpCache interceptor.
- * @file 缓存拦截器
- * @module interceptor/cache
- * @author Surmon <https://github.com/surmon-china>
- */
-
 import { tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { Reflector } from '@nestjs/core';

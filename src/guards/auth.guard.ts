@@ -2,7 +2,7 @@
  * @Author: jinhaidi
  * @Date: 2019-10-07 13:10:31
  * @Description: 鉴权
- * @LastEditTime: 2019-10-07 13:12:12
+ * @LastEditTime: 2020-01-29 16:54:43
  */
 import { AuthGuard } from '@nestjs/passport'
 import { ExecutionContext, Injectable } from '@nestjs/common'
@@ -24,10 +24,13 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
    * @description 如果解析出的数据对不上，则判定为无效
    */
   handleRequest(error, authInfo, errInfo) {
+    console.log('error/n', error)
+    console.log('authInfo/n', authInfo)
+    console.log('errInfo/n', errInfo)
     if (authInfo && !error && !errInfo) {
       return authInfo
     } else {
-      throw error || new HttpUnauthorizedException(null, errInfo && errInfo.message)
+      throw new HttpUnauthorizedException(null, errInfo && errInfo.message)
     }
   }
 }

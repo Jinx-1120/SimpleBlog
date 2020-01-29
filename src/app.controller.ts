@@ -2,6 +2,7 @@ import { Controller, Get, Param, UseGuards, Req } from '@nestjs/common'
 import { JwtAuthGuard } from '@app/guards/auth.guard'
 import { AppService } from './app.service'
 import { HttpProcessor } from '@app/decorators/http.decorator'
+import { AuthGuard } from '@nestjs/passport'
 
 @Controller('app')
 export class AppController {
@@ -22,5 +23,11 @@ export class AppController {
   // @HttpProcessor.handle('添加id')
   getId(@Param('id') id) {
     return this.appService.getHello()
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/profile')
+  getAuth(@Req() req) {
+    return req.user
   }
 }

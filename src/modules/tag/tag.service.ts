@@ -1,10 +1,3 @@
-/**
- * Tag service.
- * @file 标签模块数据服务
- * @module module/tag/service
- * @author Surmon <https://github.com/surmon-china>
- */
-
 import { PaginateResult, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@app/transforms/model.transform';
