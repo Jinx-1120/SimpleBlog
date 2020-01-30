@@ -5,6 +5,7 @@ import { InjectModel } from '@app/util/model.transform'
 import { decodeBase64, decodeMd5 } from '@app/util/code.transform'
 import { TMongooseModel } from '@app/interfaces/mongoose.interface'
 import { Auth, AuthLogin } from '@app/modules/auth/auth.model'
+import { CustomError } from '@app/errors';
 
 export interface ITokenResult {
   access_token: string;
@@ -44,7 +45,7 @@ export class AuthService {
   // 修改管理员信息
   public async putAdminInfo(auth: Auth): Promise<Auth> {
     // 可通过this.user 判断当前用户
-    console.log(this.user)
+    // console.log(this.user)
     const findUser = await this.authModel.findOne({ name: auth.name }).exec()
     const loginPassword = decodeMd5(decodeBase64(auth.password))
     if (loginPassword === findUser.password) {
@@ -81,7 +82,8 @@ export class AuthService {
       const createAuth = new this.authModel(auth)
       return createAuth.save().findOne(null, '_id name gravatar description')
     } catch (error) {
-      console.log(error)
+      const message = '账户创建失败'
+      throw new CustomError({ message, error })
     }
   }
 }

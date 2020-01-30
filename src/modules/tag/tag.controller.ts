@@ -1,6 +1,6 @@
 import * as lodash from 'lodash'
 import { PaginateResult } from 'mongoose'
-import { Controller, Get, Put, Post, Delete, Body, UseGuards } from '@nestjs/common'
+import { Controller, Get, Put, Post, Delete, Body, UseGuards, Req } from '@nestjs/common'
 import { HttpProcessor } from '@app/decorators/http.decorator'
 import { QueryParams } from '@app/decorators/query-params.decorator'
 import { Tag, DelTags } from './tag.model'
@@ -14,17 +14,18 @@ export class TagController {
   @Get()
   @HttpProcessor.paginate()
   @HttpProcessor.handle('获取标签')
-  getTags(@QueryParams() { querys, options, origin, isAuthenticated }): Promise<PaginateResult<Tag>> {
-    const keyword = lodash.trim(origin.keyword)
+  getTags(@Req() req): Promise<PaginateResult<Tag>> {
+    const querys = req.query
+    const keyword = lodash.trim(req.query.keyword)
     if (keyword) {
       const keywordRegExp = new RegExp(keyword, 'i')
+      Reflect.deleteProperty(querys, 'keyword')
       querys.$or = [
-        { name: keywordRegExp },
-        { slug: keywordRegExp },
+        { tagName: keywordRegExp },
         { description: keywordRegExp }
       ]
     }
-    return this.tagService.getList(querys, options)
+    return this.tagService.getList(querys, {})
   }
 
   @Post()

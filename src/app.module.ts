@@ -6,14 +6,18 @@ import { AssiteModule } from '@app/assite/assite.module'
 import { DatabaseModule } from '@app/processors/database/database.module'
 import { TagModule } from '@app/modules/tag/tag.module'
 import { AuthModule } from '@app/modules/auth/auth.module'
-import { HumanizedJwtAuthGuard } from './guards/humanized-auth.guard'
+import { CategoryModule } from '@app/modules/category/category.module';
+import { ArticleModule } from '@app/modules/articles/article.module';
+
 
 @Module({
   imports: [
     AssiteModule,
     DatabaseModule,
     AuthModule,
-    TagModule
+    TagModule,
+    CategoryModule,
+    ArticleModule
   ],
   controllers: [AppController],
   providers: [AppService]

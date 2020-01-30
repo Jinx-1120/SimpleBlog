@@ -2,7 +2,7 @@
  * @Author: jinhaidi
  * @Date: 2019-10-06 16:06:37
  * @Description: http错误
- * @LastEditTime: 2020-01-27 14:00:52
+ * @LastEditTime: 2020-01-30 21:20:32
  */
 import { UnauthorizedException, HttpStatus, HttpException } from '@nestjs/common'
 import { TMessage, TExceptionOption } from '@app/interfaces/http.interface'

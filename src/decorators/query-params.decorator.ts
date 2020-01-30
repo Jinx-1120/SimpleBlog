@@ -6,6 +6,7 @@ import { HttpForbiddenError, HttpBadRequestError } from '@app/errors'
 import { EPublishState, EPublicState, EOriginState, ECommentState, ESortType } from '@app/interfaces/state.interface'
 import config from '@app/app.config'
 
+
 // 预置转换器可选字段
 export enum EQueryParamsField {
   Page = 'page',
@@ -67,8 +68,7 @@ interface IValidateError {
 export const QueryParams = createParamDecorator((customConfig: TTransformConfig[], request: any): IQueryParamsResult => {
 
   // 是否已验证权限
-  // const isAuthenticated = request.isAuthenticated()
-  const isAuthenticated = true
+  const isAuthenticated = request.isAuthenticated()
 
   // 字段转换配置（字符串则代表启用，对象则代表默认值）
   const transformConfig: IQueryParamsConfig = {
@@ -122,7 +122,7 @@ export const QueryParams = createParamDecorator((customConfig: TTransformConfig[
       name: '路由/ID',
       field: EQueryParamsField.ParamsId,
       isAllowed: true,
-      isIllegal: paramsId !== null && !isAuthenticated && isNaN(paramsId),
+      isIllegal: paramsId !== undefined && !isAuthenticated && isNaN(paramsId),
       setValue() {
         // 如果用户传了 ID，则转为数字或 ObjectId
         if (paramsId !== null) {
@@ -167,30 +167,17 @@ export const QueryParams = createParamDecorator((customConfig: TTransformConfig[
     {
       name: '发布状态/state', // 评论或其他数据
       field: EQueryParamsField.State,
-      isAllowed: lodash.isUndefined(state) ||
-        (transformConfig[EQueryParamsField.CommentState]
-          ? [ECommentState.Auditing, ECommentState.Deleted, ECommentState.Published, ECommentState.Spam].includes(state)
-          : [EPublishState.Published, EPublishState.Draft, EPublishState.Recycle].includes(state)
-        ),
-      isIllegal:
-        !isAuthenticated &&
-        state !== null &&
-        state !== (
-          transformConfig[EQueryParamsField.CommentState]
-            ? ECommentState.Published
-            : EPublishState.Published
-        ),
+      isAllowed: lodash.isUndefined(state) || isAuthenticated || (!isAuthenticated && (state === ECommentState.Published)),
+      isIllegal: !isAuthenticated && (state !== undefined) && (state !== ECommentState.Published),
       setValue() {
-        // 管理员/任意状态 || 普通用户/已发布
-        if (state) {
-          querys.state = state
-          return false
-        }
         // 普通用户/未设置
         if (!isAuthenticated) {
           querys.state = transformConfig[EQueryParamsField.CommentState]
             ? ECommentState.Published
             : EPublishState.Published
+        } else {
+          // 管理员/任意状态 || 普通用户/已发布
+          querys.state = state
         }
       }
     },
@@ -198,17 +185,12 @@ export const QueryParams = createParamDecorator((customConfig: TTransformConfig[
       name: '公开状态/public',
       field: EQueryParamsField.Public,
       isAllowed: lodash.isUndefined(ppublic) || [EPublicState.Public, EPublicState.Password, EPublicState.Secret].includes(ppublic),
-      isIllegal: ppublic !== null && !isAuthenticated && ppublic !== EPublicState.Public,
+      isIllegal: ppublic && !isAuthenticated && ppublic !== EPublicState.Public,
       setValue() {
-        // 管理员/任意状态 || 普通用户/公开
-        if (ppublic) {
-          querys.public = ppublic
-          return false
-        }
         // 普通用户/未设置
-        if (!isAuthenticated) {
-          querys.public = EPublicState.Public
-        }
+        if (!isAuthenticated) querys.public = EPublicState.Public
+        // 管理员/任意状态 || 普通用户/公开
+        else querys.public = ppublic
       }
     },
     {
@@ -251,13 +233,16 @@ export const QueryParams = createParamDecorator((customConfig: TTransformConfig[
   // 已处理字段
   const isProcessedFields = validates.map(validate => validate.field)
   // 配置允许的字段
+  Reflect.deleteProperty(transformConfig, 'field')
   const allAllowFields = Object.keys(transformConfig)
   // 剩余的待处理字段 = 配置允许的字段 - 已处理字段
   const todoFields = lodash.difference(allAllowFields, isProcessedFields)
   // 将所有待处理字段循环，将值循环至 querys
   todoFields.forEach(field => {
     const targetValue = request.query[field]
-    if (targetValue !== null) querys[field] = targetValue
+    if (targetValue !== null) {
+      querys[field] = targetValue
+    }
   })
 
   // 挂载到 request 上下文
@@ -286,10 +271,5 @@ export const QueryParams = createParamDecorator((customConfig: TTransformConfig[
     visitors: { ip, ua, referer: request.referer },
     isAuthenticated
   }
-
-  // console.log('queryParams\n', request.queryParams)
-  // console.log('origin\n', request.query)
-  // console.log('visitors\n', result.visitors)
-
   return result
 })

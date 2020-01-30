@@ -12,6 +12,7 @@ export class TagService {
 
   // 请求标签列表（及聚和数据）
   public async getList(querys, options, isAuthenticated?): Promise<PaginateResult<Tag>> {
+    console.log(querys)
     return await this.tagModel.paginate(querys, options)
   }
 

@@ -2,7 +2,7 @@
  * @Author: jinhaidi
  * @Date: 2019-10-08 10:17:11
  * @Description: 智能鉴权卫士
- * @LastEditTime: 2020-01-27 18:37:40
+ * @LastEditTime: 2020-01-30 17:33:49
  */
 
 import { AuthGuard } from '@nestjs/passport'
@@ -26,7 +26,7 @@ export class HumanizedJwtAuthGuard extends AuthGuard('jwt') {
    */
   handleRequest(error, authInfo, errInfo) {
     const okToken = !!authInfo
-    const noToken = !authInfo && errInfo && errInfo.message === 'No auth token'
+    const noToken = !authInfo && errInfo && (errInfo.message === 'No auth token')
     if (!error && (okToken || noToken)) {
       return authInfo
     } else {
