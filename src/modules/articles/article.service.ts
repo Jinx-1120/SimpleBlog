@@ -72,6 +72,7 @@ export class ArticleService {
   public getList(querys, options): Promise<PaginateResult<Article>> {
     options.populate = ['category', 'tag'];
     options.select = '-password -content';
+    console.log(querys)
     return this.articleModel.paginate(querys, options);
   }
 

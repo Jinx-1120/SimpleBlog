@@ -244,6 +244,9 @@ export const QueryParams = createParamDecorator((customConfig: TTransformConfig[
       querys[field] = targetValue
     }
   })
+  Object.keys(querys).map(key => {
+    if (querys[key] === undefined) Reflect.deleteProperty(querys, key)
+  })
 
   // 挂载到 request 上下文
   request.queryParams = { querys, options, params, isAuthenticated }
