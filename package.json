@@ -30,7 +30,7 @@
     "express-rate-limit": "^5.0.0",
     "helmet": "^3.21.1",
     "js-base64": "^2.5.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "mongoose": "^5.7.5",
     "mongoose-auto-increment": "^5.0.1",
     "mongoose-paginate": "https://github.com/surmon-china/mongoose-paginate",
