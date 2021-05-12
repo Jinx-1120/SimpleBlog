@@ -34,7 +34,7 @@
     "mongoose": "^5.7.5",
     "mongoose-auto-increment": "^5.0.1",
     "mongoose-paginate": "https://github.com/surmon-china/mongoose-paginate",
-    "nodemailer": "^6.3.0",
+    "nodemailer": "^6.4.16",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "reflect-metadata": "^0.1.12",
